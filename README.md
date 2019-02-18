@@ -2,7 +2,7 @@
 
 Eine Konzertverwaltungs Webanwendung für die TMS Bad Oldesloe mit Symfony 4.2
 
-Requirements:  
+Abhängigkeiten:  
 php >= 7.1
 
 
@@ -16,7 +16,7 @@ Server starten/stoppen:
 
 Datenbankschema updaten:  
 *php bin/console doctrine:schema:update*  
-Eventuell muss die --force Option benutz werden:  
+Eventuell muss die --force Option benutzt werden:  
 *php bin/console doctrine:schema:update --force*   
 
 Fixtures laden:   
