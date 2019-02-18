@@ -1,2 +1,2 @@
-# tms-concerts
-Konzertverwaltung für die TMS Bad Oldesloe
+# Konzertverwaltung für die TMS Bad Oldesloe
+Wir müssen natrlich nicht nur entwickeln, sondern auch dokumentieren
