@@ -17,12 +17,17 @@ php bin/console server:stop
 ```
 
 ### Datenbankschema updaten: 
-*Die --force Option sollte nicht in Produktion benutzt werden:* 
+```bash
+php bin/console doctrine:schema:update
+```
+Eventuell muss die --force Option benutzt werden: 
 ```bash
 php bin/console doctrine:schema:update --force
 ``` 
 
-### Tests ausführen: 
+### Fixtures laden:   
+Achtung, dies löscht alle Einträge in der Datenbank  
 ```bash
-php bin/phpunit
+php bin/console doctrine:fixtures:load -n
 ```
+
