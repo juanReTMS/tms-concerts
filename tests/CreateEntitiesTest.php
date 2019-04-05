@@ -2,7 +2,7 @@
 
 namespace App\Tests;
 
-use Doctrine\ORM\OptimisticLockException as OptimisticLockExceptionAlias;
+use Doctrine\ORM\OptimisticLockException as LockException;
 use Doctrine\ORM\ORMException;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -38,7 +38,7 @@ class CreateEntitiesTest extends WebTestCase
 
     /**
      * @throws ORMException
-     * @throws OptimisticLockExceptionAlias
+     * @throws LockException
      */
     public function testLocation()
     {
@@ -55,7 +55,7 @@ class CreateEntitiesTest extends WebTestCase
 
     /**
      * @throws ORMException
-     * @throws OptimisticLockExceptionAlias
+     * @throws LockException
      */
     public function testPerson()
     {
@@ -74,7 +74,7 @@ class CreateEntitiesTest extends WebTestCase
     /**
      * @throws Exception
      * @throws ORMException
-     * @throws OptimisticLockExceptionAlias
+     * @throws LockException
      */
     public function testConcert()
     {
