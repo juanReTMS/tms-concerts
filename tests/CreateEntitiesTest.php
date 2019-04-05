@@ -27,6 +27,7 @@ class CreateEntitiesTest extends WebTestCase
         $client = static::createClient();
         $this->em = $client->getContainer()->get('doctrine')->getManager();
         $this->doctrine = $client->getContainer()->get('doctrine');
+        $this->em->beginTransaction();
     }
 
     public function testLocation()
