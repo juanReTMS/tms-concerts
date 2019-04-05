@@ -64,6 +64,12 @@ class Concert
         $this->organizers = new ArrayCollection();
     }
 
+    public function __toString()
+    {
+        return "$this->title, ". date_format($this->start, "d.m.Y");
+    }
+
+
     public function getId(): ?int
     {
         return $this->id;

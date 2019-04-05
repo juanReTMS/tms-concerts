@@ -64,6 +64,12 @@ class Location
         $this->concerts = new ArrayCollection();
     }
 
+    public function __toString()
+    {
+        return "$this->institution $this->room, ID: $this->id";
+    }
+
+
     public function getId(): ?int
     {
         return $this->id;
