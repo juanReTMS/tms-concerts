@@ -19,7 +19,7 @@ class CreateEntitiesTest extends WebTestCase
     public function __construct($name = null, array $data = [], string $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
-        $this->em = $client->getContainer()->get('doctrine')->getManager();
+        $this->em = static::createClient()->getContainer()->get('doctrine')->getManager();
         $this->em->beginTransaction();
     }
 
