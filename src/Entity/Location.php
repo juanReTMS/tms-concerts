@@ -35,7 +35,7 @@ class Location
      * @Assert\NotBlank()
      * @ORM\Column(type="string", length=255)
      */
-    private $building;
+    private $building; #TODO Is it required ?
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
