@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\LocationRepository")
@@ -19,19 +20,22 @@ class Location
     private $id;
 
     /**
+     * @Assert\NotBlank()
      * @ORM\Column(type="string", length=255)
      */
     private $description;
 
     /**
+     * @Assert\NotBlank()
      * @ORM\Column(type="string", length=255)
      */
     private $institution;
 
     /**
+     * @Assert\NotBlank()
      * @ORM\Column(type="string", length=255)
      */
-    private $building;
+    private $building; #TODO Is it required ?
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -44,6 +48,7 @@ class Location
     private $room;
 
     /**
+     * @Assert\Range(min=0, max=2048)
      * @ORM\Column(type="integer")
      */
     private $seats;
@@ -63,6 +68,12 @@ class Location
         $this->contacts = new ArrayCollection();
         $this->concerts = new ArrayCollection();
     }
+
+    public function __toString()
+    {
+        return "$this->institution $this->room, ID: $this->id";
+    }
+
 
     public function getId(): ?int
     {
