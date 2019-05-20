@@ -2,10 +2,11 @@
 
 namespace App\Entity;
 
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-
+use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ConcertRepository")
  */
@@ -19,16 +20,19 @@ class Concert
     private $id;
 
     /**
+     * @Assert\NotBlank()
      * @ORM\Column(type="string", length=255)
      */
     private $title;
 
     /**
+     * @Assert\NotNull()
      * @ORM\Column(type="datetime")
      */
     private $start;
 
     /**
+     * @Assert\NotNull()
      * @ORM\Column(type="datetime")
      */
     private $end;
@@ -39,6 +43,7 @@ class Concert
     private $price;
 
     /**
+     * @Assert\NotBlank()
      * @ORM\Column(type="text")
      */
     private $description;
@@ -64,6 +69,12 @@ class Concert
         $this->organizers = new ArrayCollection();
     }
 
+    public function __toString()
+    {
+        return "$this->title, ". date_format($this->start, "d.m.Y");
+    }
+
+
     public function getId(): ?int
     {
         return $this->id;
@@ -81,24 +92,24 @@ class Concert
         return $this;
     }
 
-    public function getStart(): ?\DateTimeInterface
+    public function getStart(): ?DateTimeInterface
     {
         return $this->start;
     }
 
-    public function setStart(\DateTimeInterface $start): self
+    public function setStart(DateTimeInterface $start): self
     {
         $this->start = $start;
 
         return $this;
     }
 
-    public function getEnd(): ?\DateTimeInterface
+    public function getEnd(): ?DateTimeInterface
     {
         return $this->end;
     }
 
-    public function setEnd(\DateTimeInterface $end): self
+    public function setEnd(DateTimeInterface $end): self
     {
         $this->end = $end;
 
