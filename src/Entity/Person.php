@@ -43,11 +43,6 @@ class Person
     private $telephone;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $role;
-
-    /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Location", mappedBy="contacts")
      */
     private $locations;
@@ -56,6 +51,11 @@ class Person
      * @ORM\ManyToMany(targetEntity="App\Entity\Concert", mappedBy="organizers")
      */
     private $concerts;
+
+    /**
+     * @ORM\Column(type="array")
+     */
+    private $roles = [];
 
     public function __construct()
     {
@@ -122,17 +122,6 @@ class Person
         return $this;
     }
 
-    public function getRole(): ?string
-    {
-        return $this->role;
-    }
-
-    public function setRole(?string $role): self
-    {
-        $this->role = $role;
-
-        return $this;
-    }
 
     /**
      * @return Collection|Location[]
@@ -186,6 +175,18 @@ class Person
             $this->concerts->removeElement($concert);
             $concert->removeOrganizer($this);
         }
+
+        return $this;
+    }
+
+    public function getRoles(): ?array
+    {
+        return $this->roles;
+    }
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
 
         return $this;
     }
