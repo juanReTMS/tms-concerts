@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Concert{% endblock %}
+
+{% block body %}
+    <h1>Edit Concert</h1>
+
+    {{ include('concert/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('concert_index') }}">back to list</a>
+
+    {{ include('concert/_delete_form.html.twig') }}
+{% endblock %}
