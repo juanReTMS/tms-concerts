@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/location")
+ * @Route("/admin/location")
  */
 class LocationController extends AbstractController
 {

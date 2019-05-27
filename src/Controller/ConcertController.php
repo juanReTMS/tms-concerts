@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/concert")
+ * @Route("/admin/concert")
  */
 class ConcertController extends AbstractController
 {
@@ -65,7 +65,6 @@ class ConcertController extends AbstractController
     {
         $form = $this->createForm(ConcertType::class, $concert);
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
             $this->getDoctrine()->getManager()->flush();
 
