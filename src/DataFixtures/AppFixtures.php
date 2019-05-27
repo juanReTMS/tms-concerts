@@ -8,10 +8,22 @@ use App\Entity\Person;
 use DateTime;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Validator\Constraints\Date;
 
 class AppFixtures extends Fixture
 {
+    /**
+     * @var UserPasswordEncoderInterface
+     */
+    private $encoder;
+
+    public function __construct(UserPasswordEncoderInterface $encoder)
+    {
+        $this->encoder = $encoder;
+    }
+
+
     /**
      * @param ObjectManager $manager
      * @throws \Exception
@@ -23,14 +35,19 @@ class AppFixtures extends Fixture
         $person1->setLastName("Test");
         $person1->setEmail("alex@alex.alex");
         $person1->setTelephone('04242 12345');
+        $person1->setPassword($this->encoder->encodePassword($person1, "admin"));
+
         $person2 = new Person();
         $person2->setFirstName("Darian");
         $person2->setLastName("Test");
         $person2->setEmail("darian@darian.darian");
+        $person2->setPassword($this->encoder->encodePassword($person2, "admin"));
         $person3 = new Person();
         $person3->setFirstName("Ming");
         $person3->setLastName("Test");
         $person3->setEmail("main@ming.ming");
+        $person3->setPassword($this->encoder->encodePassword($person3, "admin"));
+
 
         $location1 = new Location();
         $location1->setInstitution("TMS");
