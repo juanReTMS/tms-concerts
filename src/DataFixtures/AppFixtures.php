@@ -37,6 +37,7 @@ class AppFixtures extends Fixture
         $person1->setTelephone('04242 12345');
         $person1->setPassword($this->encoder->encodePassword($person1, "admin"));
         $person1->setConfirmed(true);
+        $person1->setRoles(['ROLE_USER','ROLE_ADMIN']);
 
         $person2 = new Person();
         $person2->setFirstName("Darian");
@@ -44,6 +45,7 @@ class AppFixtures extends Fixture
         $person2->setEmail("darian@darian.darian");
         $person2->setPassword($this->encoder->encodePassword($person2, "admin"));
         $person2->setConfirmed(true);
+        $person2->setRoles(['ROLE_USER','ROLE_ADMIN']);
 
         $person3 = new Person();
         $person3->setFirstName("Ming");

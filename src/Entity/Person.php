@@ -58,7 +58,7 @@ class Person implements UserInterface
     /**
      * @ORM\Column(type="array")
      */
-    private $roles = [];
+    private $roles = ['ROLE_USER'];
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -217,8 +217,7 @@ class Person implements UserInterface
 
     public function getRoles(): ?array
     {
-        return ['ROLE_USER'];
-        #return $this->roles;
+        return $this->roles;
     }
 
     public function setRoles(array $roles): self
