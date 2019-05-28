@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 /**
  * @Route("/person")
@@ -28,7 +29,7 @@ class PersonController extends AbstractController
     /**
      * @Route("/new", name="person_new", methods={"GET","POST"})
      */
-    public function new(Request $request): Response
+    public function new(Request $request, UserPasswordEncoderInterface $encoder): Response
     {
         $person = new Person();
         $form = $this->createForm(PersonType::class, $person);
@@ -36,6 +37,7 @@ class PersonController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
+            $person->setPassword($encoder->encodePassword($person, $person->getPlainPassword()));
             $entityManager->persist($person);
             $entityManager->flush();
 
@@ -85,7 +87,7 @@ class PersonController extends AbstractController
      */
     public function delete(Request $request, Person $person): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$person->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $person->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($person);
             $entityManager->flush();
