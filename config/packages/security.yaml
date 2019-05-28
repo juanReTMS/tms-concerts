@@ -15,6 +15,7 @@ security:
       security: false
     main:
       anonymous: true
+      user_checker: App\Security\PersonConfirmedChecker
       form_login:
         username_parameter: _email
         login_path: login #Routename

@@ -71,6 +71,11 @@ class Person implements UserInterface
      */
     private $plainPassword;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $confirmed = false;
+
 
     public function __construct()
     {
@@ -251,7 +256,7 @@ class Person implements UserInterface
      */
     public function getUsername()
     {
-      return $this->email;
+        return $this->email;
     }
 
     /**
@@ -268,6 +273,18 @@ class Person implements UserInterface
     public function setPassword(string $password): self
     {
         $this->password = $password;
+
+        return $this;
+    }
+
+    public function getConfirmed(): ?bool
+    {
+        return $this->confirmed;
+    }
+
+    public function setConfirmed(bool $confirmed): self
+    {
+        $this->confirmed = $confirmed;
 
         return $this;
     }
