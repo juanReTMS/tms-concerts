@@ -3,8 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Person;
+use App\Form\ForgotPasswordType;
 use App\Form\PersonRegisterType;
-use App\Form\PersonType;
+use App\Repository\PersonRepository;
 use Exception;
 use Ramsey\Uuid\Uuid;
 use Swift_Mailer;
@@ -12,6 +13,7 @@ use Swift_Message;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
@@ -33,24 +35,25 @@ class SecurityController extends AbstractController
      * @Route("/register", name="register")
      * @throws Exception
      */
-    public function register(Request $request, UserPasswordEncoderInterface $encoder, Swift_Mailer $mailer)
+    public function register(Request $request, UserPasswordEncoderInterface $encoder, Swift_Mailer $mailer, FlashBagInterface $bag)
     {
         $person = new Person();
         $form = $this->createForm(PersonRegisterType::class, $person);
-        $id = Uuid::uuid4()->toString();
-        $person->setConfirmationId($id);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $id = Uuid::uuid4()->toString();
+            $person->setUuid($id);
             $person->setPassword($encoder->encodePassword($person, $person->getPlainPassword()));
             $em = $this->getDoctrine()->getManager();
             $em->persist($person);
             $em->flush();
             $msg = new Swift_Message('Confirmation Email');
-            $msg->setFrom('konzertverwaltung@tms-badoldesloe.de')
+            $msg->setFrom('alex@alex.test')
                 ->setTo($person->getEmail())
-                ->setBody("<a href=\"http://localhost:8000/confirm/" .
-                    $person->getId() . "/" . $person->getConfirmationId() . "\" >CONFIRM EMAIL </a>", 'text/html');
+                ->setBody($this->renderView('security/email/confirm.html.twig',
+                    ['id' => $person->getId(), 'uuid' => $id]), 'text/html');
             $mailer->send($msg);
+            $bag->add('success', 'A Confirmation Email Has Been Send!');
             return $this->redirectToRoute('login');
         }
 
@@ -60,22 +63,74 @@ class SecurityController extends AbstractController
     }
 
     /**
-     * @Route("/confirm/{id}/{uuid}/", name="confirm")
+     * @Route("/confirm/{id}/{uuid}", name="confirm")
      */
-    public function confirm(Person $person, $uuid)
+    public function confirm(Person $person, $uuid, FlashBagInterface $bag)
     {
-        if ($person->getConfirmationId() == $uuid) {
+        if ($person->getUuid() == $uuid) {
             $person->setConfirmed(true);
-            $person->setConfirmationId(null);
+            $person->setUuid(null);
             $em = $this->getDoctrine()->getManager();
             $em->persist($person);
             $em->flush();
-            return new Response("YOU HAVE BEEN VERIFIED");
+            $bag->add('success', 'You Have Been Confirmed!');
         } else if ($person->getConfirmed()) {
-            return new Response("YOU HAVE ALREADY CONFIRMED YOUR ACCOUT");
+            $bag->add('warning', 'You Have Already Confirmed Your Account!');
+        } else {
+            $bag->add('danger', 'Your Account Could Not Be Confirmed!');
         }
-        return new Response("THE ID IS INVALID :-(");
+        return $this->redirectToRoute('login');
+    }
 
+    /**
+     * @Route("/forgot_password", name="forgot_password")
+     * @Route("/forgot_password/{id}/{uuid}", name="forgot_password_data")
+     * @throws Exception
+     */
+    public function forgotPassword(Request $request, PersonRepository $personRepository,
+                                   Swift_Mailer $mailer, FlashBagInterface $bag, $id = null, $uuid = null)
+    {
+        /* Make reset if url contains parameters */
+        if ($id && $uuid) {
+            $person = $personRepository->find($id);
+            if ($person && $person->getUuid() == $uuid) {
+                // TODO Dislpay form and handle submit
+                return new Response("PARAMETERS SET");
+            }
+            $bag->add('danger', 'The Data Is Invalid!');
+            return $this->redirectToRoute('forgot_password');
+        }
+        /* Create/Handle form */
+        $form = $this->createForm(ForgotPasswordType::class);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $person = $personRepository->findOneBy(['email' => $form->getData()['email']]);
+            if ($person) {
+                if ($person->getConfirmed()) {
+
+                    $uuid = Uuid::uuid4()->toString();
+                    $person->setUuid($uuid);
+                    $em = $this->getDoctrine()->getManager();
+                    $em->persist($person);
+                    $em->flush();
+
+                    $msg = new Swift_Message('Confirmation Email');
+                    $msg->setFrom('alex@alex.test')
+                        ->setTo($person->getEmail())
+                        ->setBody($this->renderView('security/email/forgot_password.html.twig',
+                            ['id' => $person->getId(), 'uuid' => $uuid]), 'text/html');
+                    $mailer->send($msg);
+
+                    $bag->set('success', 'An Email has been send');
+                } else {
+                    $bag->set('danger', 'Please Confirm Your Account First!');
+                }
+            } else {
+                $bag->set('danger', 'No Matching Email Found!');
+            }
+        }
+        return $this->render('security/forgot_password.html.twig',
+            ['form' => $form->createView()]);
     }
 
     /**

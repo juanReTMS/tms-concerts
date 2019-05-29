@@ -65,8 +65,6 @@ class ConcertController extends AbstractController
     {
         $form = $this->createForm(ConcertType::class, $concert);
         $form->handleRequest($request);
-        $p=$form->getPropertyPath();
-        echo "";
         if ($form->isSubmitted() && $form->isValid()) {
             $this->getDoctrine()->getManager()->flush();
 

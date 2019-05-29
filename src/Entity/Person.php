@@ -77,9 +77,9 @@ class Person implements UserInterface
     private $confirmed = false;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $confirmationId;
+    private $uuid;
 
 
     public function __construct()
@@ -293,14 +293,14 @@ class Person implements UserInterface
         return $this;
     }
 
-    public function getConfirmationId(): ?string
+    public function getUuid(): ?string
     {
-        return $this->confirmationId;
+        return $this->uuid;
     }
 
-    public function setConfirmationId(?string $confirmationId): self
+    public function setUuid(?string $uuid): self
     {
-        $this->confirmationId = $confirmationId;
+        $this->uuid = $uuid;
 
         return $this;
     }
