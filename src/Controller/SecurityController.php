@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Person;
+use App\Form\EnterNewPasswordType;
 use App\Form\ForgotPasswordType;
 use App\Form\PersonRegisterType;
 use App\Repository\PersonRepository;
@@ -12,7 +13,6 @@ use Swift_Mailer;
 use Swift_Message;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -84,23 +84,11 @@ class SecurityController extends AbstractController
 
     /**
      * @Route("/forgot_password", name="forgot_password")
-     * @Route("/forgot_password/{id}/{uuid}", name="forgot_password_data")
      * @throws Exception
      */
     public function forgotPassword(Request $request, PersonRepository $personRepository,
-                                   Swift_Mailer $mailer, FlashBagInterface $bag, $id = null, $uuid = null)
+                                   Swift_Mailer $mailer, FlashBagInterface $bag)
     {
-        /* Make reset if url contains parameters */
-        if ($id && $uuid) {
-            $person = $personRepository->find($id);
-            if ($person && $person->getUuid() == $uuid) {
-                // TODO Dislpay form and handle submit
-                return new Response("PARAMETERS SET");
-            }
-            $bag->add('danger', 'The Data Is Invalid!');
-            return $this->redirectToRoute('forgot_password');
-        }
-        /* Create/Handle form */
         $form = $this->createForm(ForgotPasswordType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -114,7 +102,7 @@ class SecurityController extends AbstractController
                     $em->persist($person);
                     $em->flush();
 
-                    $msg = new Swift_Message('Confirmation Email');
+                    $msg = new Swift_Message('Reset Your Password');
                     $msg->setFrom('alex@alex.test')
                         ->setTo($person->getEmail())
                         ->setBody($this->renderView('security/email/forgot_password.html.twig',
@@ -131,6 +119,34 @@ class SecurityController extends AbstractController
         }
         return $this->render('security/forgot_password.html.twig',
             ['form' => $form->createView()]);
+    }
+
+    /**
+     * @Route("/forgot_password/{id}/{uuid}", name="forgot_password_data")
+     * @throws Exception
+     */
+    public function forgotPasswordData(Request $request, PersonRepository $personRepository,
+                                       FlashBagInterface $bag, $id, $uuid, UserPasswordEncoderInterface $encoder)
+    {
+        $person = $personRepository->find($id);
+        if ($person && $person->getUuid() == $uuid) {
+            $form = $this->createForm(EnterNewPasswordType::class);
+            $form->handleRequest($request);
+            if ($form->isSubmitted() && $form->isValid()) {
+                $person->setPassword($encoder->encodePassword($person, $form->getData()['password']));
+                $person->setUuid(null);
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($person);
+                $em->flush();
+                $bag->add('success', 'The Password Has Been Changed!');
+                return $this->redirectToRoute('login');
+            }
+            return $this->render('security/forgot_password.html.twig',
+                ['form' => $form->createView(), 'msg' => 'Set Your New Password']);
+        }
+        $bag->add('danger', 'The Data Is Invalid!');
+        return $this->redirectToRoute('forgot_password');
+
     }
 
     /**

@@ -27,8 +27,8 @@ class PersonRegisterType extends AbstractType
             ->add('plainPassword', RepeatedType::class, array(
                 'type' => PasswordType::class,
                 'invalid_message' => 'The Passwords Do Not Match',
-                'first_options' => array('label' => 'Password'),
-                'second_options' => array('label' => 'Repeat Password'),
+                'first_options' => array('label' => 'Password*'),
+                'second_options' => array('label' => 'Repeat Password*'),
                 'constraints' => [
                     new NotBlank(['message' => 'This field is required']),
                     new Length([
